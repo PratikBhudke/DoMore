@@ -1,0 +1,125 @@
+<div class="contact-container">
+  <div class="back-navigation">
+    <a routerLink="/dashboard" class="back-button">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back</span>
+    </a>
+  </div>
+
+  <div class="contact-content">
+    <h1>Contact Us</h1>
+    <p class="subtitle">Have a question or feedback? We'd love to hear from you.</p>
+
+    <!-- Success Message -->
+    <div class="alert alert-success" *ngIf="successMessage">
+      <i class="fas fa-check-circle"></i>
+      {{ successMessage }}
+    </div>
+
+    <!-- Error Message -->
+    <div class="alert alert-error" *ngIf="errorMessage">
+      <i class="fas fa-exclamation-circle"></i>
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input 
+            type="text" 
+            id="name" 
+            formControlName="name" 
+            placeholder="Enter your name"
+            [class.is-invalid]="name?.invalid && (name?.dirty || name?.touched || submitted)"
+          >
+        </div>
+        <div class="error-message" *ngIf="name?.invalid && (name?.dirty || name?.touched || submitted)">
+          <span *ngIf="name?.errors?.['required']">Name is required</span>
+          <span *ngIf="name?.errors?.['minlength']">Name must be at least 3 characters</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-group">
+          <i class="fas fa-envelope"></i>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            placeholder="Enter your email"
+            [class.is-invalid]="email?.invalid && (email?.dirty || email?.touched || submitted)"
+          >
+        </div>
+        <div class="error-message" *ngIf="email?.invalid && (email?.dirty || email?.touched || submitted)">
+          <span *ngIf="email?.errors?.['required']">Email is required</span>
+          <span *ngIf="email?.errors?.['email']">Please enter a valid email</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <div class="input-group">
+          <i class="fas fa-heading"></i>
+          <input 
+            type="text" 
+            id="subject" 
+            formControlName="subject" 
+            placeholder="Enter message subject"
+            [class.is-invalid]="subject?.invalid && (subject?.dirty || subject?.touched || submitted)"
+          >
+        </div>
+        <div class="error-message" *ngIf="subject?.invalid && (subject?.dirty || subject?.touched || submitted)">
+          <span *ngIf="subject?.errors?.['required']">Subject is required</span>
+          <span *ngIf="subject?.errors?.['minlength']">Subject must be at least 5 characters</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <div class="input-group">
+          <i class="fas fa-comment-alt"></i>
+          <textarea 
+            id="message" 
+            formControlName="message" 
+            placeholder="Enter your message"
+            rows="5"
+            [class.is-invalid]="message?.invalid && (message?.dirty || message?.touched || submitted)"
+          ></textarea>
+        </div>
+        <div class="error-message" *ngIf="message?.invalid && (message?.dirty || message?.touched || submitted)">
+          <span *ngIf="message?.errors?.['required']">Message is required</span>
+          <span *ngIf="message?.errors?.['minlength']">Message must be at least 20 characters</span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="contactForm.invalid && submitted">
+        <i class="fas fa-paper-plane"></i>
+        Send Message
+      </button>
+    </form>
+
+    <div class="contact-info">
+      <h2>Other Ways to Reach Us</h2>
+      <div class="info-cards">
+        <div class="info-card">
+          <i class="fas fa-envelope"></i>
+          <h3>Email</h3>
+          <p>support&#64;domore.com</p>
+        </div>
+        <div class="info-card">
+          <i class="fas fa-phone"></i>
+          <h3>Phone</h3>
+          <p>+1 (555) 123-4567</p>
+        </div>
+        <div class="info-card">
+          <i class="fas fa-map-marker-alt"></i>
+          <h3>Address</h3>
+          <p>123 DoMore Street<br>Tech City, TC 12345</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

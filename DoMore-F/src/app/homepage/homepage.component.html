@@ -1,0 +1,53 @@
+<div class="home-container">
+    <nav class="sidebar">
+        <div class="user-profile">
+            <div class="profile-info">
+                <i class="fas fa-user-circle"></i>
+                <span>Welcome, {{userName}}</span>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li>
+                <a (click)="setActiveTab('todos')" [class.active]="activeTab === 'todos'">
+                    <i class="fas fa-tasks"></i> Todo List
+                </a>
+            </li>
+            <li>
+                <a (click)="setActiveTab('moneytracker')" [class.active]="activeTab === 'moneytracker'">
+                    <i class="fas fa-money-bill-wave"></i> Money Tracker
+                </a>
+            </li>
+            <li>
+                <a (click)="setActiveTab('notes')" [class.active]="activeTab === 'notes'">
+                    <i class="fas fa-sticky-note"></i> Notes
+                </a>
+            </li>
+            <li>
+                <a (click)="setActiveTab('calendar')" [class.active]="activeTab === 'calendar'">
+                    <i class="fas fa-calendar-alt"></i> Calendar
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="content">
+        <div class="tab-header">
+            <h2>{{getTabTitle()}}</h2>
+        </div>
+        
+        <div class="tab-content" [ngSwitch]="activeTab">
+            <app-todo *ngSwitchCase="'todos'"></app-todo>
+            <app-moneytracker *ngSwitchCase="'moneytracker'"></app-moneytracker>
+            <div *ngSwitchCase="'notes'" class="coming-soon">
+                <i class="fas fa-clock"></i>
+                <h3>Coming Soon</h3>
+                <p>Notes feature is under development</p>
+            </div>
+            <div *ngSwitchCase="'calendar'" class="coming-soon">
+                <i class="fas fa-clock"></i>
+                <h3>Coming Soon</h3>
+                <p>Calendar feature is under development</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="about-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <h1>About DoMore</h1>
+    <p>Your all-in-one productivity solution</p>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="mission-section">
+    <div class="mission-content">
+      <h2>{{mission.title}}</h2>
+      <p>{{mission.description}}</p>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2>Our Features</h2>
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features">
+        <i [class]="feature.icon"></i>
+        <div class="content">
+          <h3>{{feature.title}}</h3>
+          <p>{{feature.description}}</p>
+          <a [routerLink]="getFeatureRoute(feature.title)" class="btn-launch">Launch <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values Section -->
+  <section class="values-section">
+    <h2>Our Values</h2>
+    <div class="values-grid">
+      <div class="value-card" *ngFor="let value of values">
+        <i [class]="value.icon"></i>
+        <h3>{{value.title}}</h3>
+        <p>{{value.description}}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="team-section">
+    <h2>Meet Our Team</h2>
+    <div class="team-grid">
+      <div class="team-card" *ngFor="let member of team">
+        <div class="member-image">
+          <img [src]="member.image" [alt]="member.name">
+        </div>
+        <h3>{{member.name}}</h3>
+        <h4>{{member.role}}</h4>
+        <p>{{member.bio}}</p>
+        <div class="social-links">
+          <a [href]="member.social.linkedin" target="_blank"><i class="fab fa-linkedin"></i></a>
+          <a [href]="member.social.github" target="_blank"><i class="fab fa-github"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

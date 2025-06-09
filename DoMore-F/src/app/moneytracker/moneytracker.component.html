@@ -1,0 +1,342 @@
+<div class="expense-container">
+  <!-- Back Navigation -->
+  <div class="back-navigation">
+    <a routerLink="/dashboard" class="back-button">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back</span>
+    </a>
+  </div>
+
+  <!-- Expense Content -->
+  <div class="expense-content">
+    <!-- Summary Section -->
+    <div class="summary-section">
+      <div class="summary-card income">
+        <h3>Total Income</h3>
+        <span class="amount">₹{{ totalIncome | number:'1.2-2' }}</span>
+      </div>
+      <div class="summary-card expenses">
+        <h3>Total Expenses</h3>
+        <span class="amount">₹{{ totalExpenses | number:'1.2-2' }}</span>
+      </div>
+      <div class="summary-card balance" [class.negative]="remainingBalance < 0">
+        <h3>Remaining Balance</h3>
+        <span class="amount">₹{{ remainingBalance | number:'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+      <button 
+        [class.active]="activeTab === 'expenses'"
+        (click)="setActiveTab('expenses')"
+      >
+        <i class="fas fa-receipt"></i> Expenses
+      </button>
+      <button 
+        [class.active]="activeTab === 'income'"
+        (click)="setActiveTab('income')"
+      >
+        <i class="fas fa-money-bill-wave"></i> Income
+      </button>
+    </div>
+
+    <!-- Expenses Section -->
+    <div class="content-section" *ngIf="activeTab === 'expenses'">
+      <div class="form-section">
+        <h2>{{ editingExpense ? 'Edit Expense' : 'Add New Expense' }}</h2>
+
+        <!-- Error Message -->
+        <div class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+
+        <form [formGroup]="expenseForm" (ngSubmit)="onSubmitExpense()">
+          <div class="form-group">
+            <label for="description">Description</label>
+            <input 
+              type="text" 
+              id="description" 
+              formControlName="description" 
+              class="form-control"
+              [class.is-invalid]="description?.invalid && description?.touched"
+              placeholder="Enter expense description"
+            >
+            <div class="error-message" *ngIf="description?.invalid && description?.touched">
+              <span *ngIf="description?.errors?.['required']">Description is required</span>
+              <span *ngIf="description?.errors?.['minlength']">Description must be at least 3 characters</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="expenseAmount">Amount</label>
+            <div class="input-group">
+              <span class="currency-symbol">₹</span>
+              <input 
+                type="number" 
+                id="expenseAmount" 
+                formControlName="amount" 
+                class="form-control"
+                [class.is-invalid]="expenseAmount?.invalid && expenseAmount?.touched"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              >
+            </div>
+            <div class="error-message" *ngIf="expenseAmount?.invalid && expenseAmount?.touched">
+              <span *ngIf="expenseAmount?.errors?.['required']">Amount is required</span>
+              <span *ngIf="expenseAmount?.errors?.['min']">Amount must be greater than 0</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select 
+              id="category" 
+              formControlName="category" 
+              class="form-control"
+              [class.is-invalid]="category?.invalid && category?.touched"
+            >
+              <option value="">Select a category</option>
+              <option *ngFor="let cat of categories" [value]="cat">{{cat}}</option>
+            </select>
+            <div class="error-message" *ngIf="category?.invalid && category?.touched">
+              Category is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="expenseDate">Date</label>
+            <input 
+              type="date" 
+              id="expenseDate" 
+              formControlName="date" 
+              class="form-control"
+              [class.is-invalid]="expenseDate?.invalid && expenseDate?.touched"
+            >
+            <div class="error-message" *ngIf="expenseDate?.invalid && expenseDate?.touched">
+              Date is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="paymentMethod">Payment Method</label>
+            <select 
+              id="paymentMethod" 
+              formControlName="paymentMethod" 
+              class="form-control"
+              [class.is-invalid]="paymentMethod?.invalid && paymentMethod?.touched"
+            >
+              <option value="">Select payment method</option>
+              <option *ngFor="let method of paymentMethods" [value]="method">{{method}}</option>
+            </select>
+            <div class="error-message" *ngIf="paymentMethod?.invalid && paymentMethod?.touched">
+              Payment method is required
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="expenseForm.invalid || isLoading">
+              <i class="fas" [class.fa-plus]="!editingExpense" [class.fa-save]="editingExpense"></i>
+              {{ editingExpense ? 'Update' : 'Add' }} Expense
+            </button>
+            <button 
+              type="button" 
+              *ngIf="editingExpense" 
+              (click)="resetExpenseForm()" 
+              class="btn btn-secondary"
+            >
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="list-section">
+        <h2>Expense List</h2>
+
+        <!-- Loading State -->
+        <div class="loading-state" *ngIf="isLoading">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading expenses...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="!isLoading && expenses.length === 0">
+          <i class="fas fa-receipt"></i>
+          <h3>No Expenses Yet</h3>
+          <p>Add your first expense to start tracking!</p>
+        </div>
+
+        <!-- Expense Items -->
+        <div class="items-list" *ngIf="!isLoading && expenses.length > 0">
+          <div *ngFor="let expense of expenses" class="item-card">
+            <div class="item-content">
+              <div class="item-main">
+                <h3>{{expense.description}}</h3>
+                <span class="amount">₹{{expense.amount | number:'1.2-2'}}</span>
+              </div>
+              <div class="item-details">
+                <span class="category">
+                  <i class="fas fa-tag"></i> {{expense.category}}
+                </span>
+                <span class="payment-method">
+                  <i class="fas fa-credit-card"></i> {{expense.paymentMethod}}
+                </span>
+                <span class="date">
+                  <i class="far fa-calendar-alt"></i> {{expense.date | date}}
+                </span>
+              </div>
+            </div>
+            
+            <div class="item-actions">
+              <button (click)="editExpense(expense)" class="btn btn-edit">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button (click)="deleteExpense(expense.id!)" class="btn btn-delete">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Income Section -->
+    <div class="content-section" *ngIf="activeTab === 'income'">
+      <div class="form-section">
+        <h2>{{ editingIncome ? 'Edit Income' : 'Add New Income' }}</h2>
+
+        <!-- Error Message -->
+        <div class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+
+        <form [formGroup]="incomeForm" (ngSubmit)="onSubmitIncome()">
+          <div class="form-group">
+            <label for="source">Source</label>
+            <select 
+              id="source" 
+              formControlName="source" 
+              class="form-control"
+              [class.is-invalid]="source?.invalid && source?.touched"
+            >
+              <option value="">Select income source</option>
+              <option *ngFor="let src of incomeSources" [value]="src">{{src}}</option>
+            </select>
+            <div class="error-message" *ngIf="source?.invalid && source?.touched">
+              Source is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="incomeAmount">Amount</label>
+            <div class="input-group">
+              <span class="currency-symbol">₹</span>
+              <input 
+                type="number" 
+                id="incomeAmount" 
+                formControlName="amount" 
+                class="form-control"
+                [class.is-invalid]="incomeAmount?.invalid && incomeAmount?.touched"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              >
+            </div>
+            <div class="error-message" *ngIf="incomeAmount?.invalid && incomeAmount?.touched">
+              <span *ngIf="incomeAmount?.errors?.['required']">Amount is required</span>
+              <span *ngIf="incomeAmount?.errors?.['min']">Amount must be greater than 0</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="incomeDate">Date</label>
+            <input 
+              type="date" 
+              id="incomeDate" 
+              formControlName="date" 
+              class="form-control"
+              [class.is-invalid]="incomeDate?.invalid && incomeDate?.touched"
+            >
+            <div class="error-message" *ngIf="incomeDate?.invalid && incomeDate?.touched">
+              Date is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="incomeDescription">Description (Optional)</label>
+            <textarea 
+              id="incomeDescription" 
+              formControlName="description" 
+              class="form-control"
+              placeholder="Enter additional details"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="incomeForm.invalid || isLoading">
+              <i class="fas" [class.fa-plus]="!editingIncome" [class.fa-save]="editingIncome"></i>
+              {{ editingIncome ? 'Update' : 'Add' }} Income
+            </button>
+            <button 
+              type="button" 
+              *ngIf="editingIncome" 
+              (click)="resetIncomeForm()" 
+              class="btn btn-secondary"
+            >
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="list-section">
+        <h2>Income List</h2>
+
+        <!-- Loading State -->
+        <div class="loading-state" *ngIf="isLoading">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading income entries...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="!isLoading && incomes.length === 0">
+          <i class="fas fa-money-bill-wave"></i>
+          <h3>No Income Entries Yet</h3>
+          <p>Add your first income entry to start tracking!</p>
+        </div>
+
+        <!-- Income Items -->
+        <div class="items-list" *ngIf="!isLoading && incomes.length > 0">
+          <div *ngFor="let income of incomes" class="item-card">
+            <div class="item-content">
+              <div class="item-main">
+                <h3>{{income.source}}</h3>
+                <span class="amount">₹{{income.amount | number:'1.2-2'}}</span>
+              </div>
+              <div class="item-details">
+                <span class="date">
+                  <i class="far fa-calendar-alt"></i> {{income.date | date}}
+                </span>
+                <span class="description" *ngIf="income.description">
+                  <i class="fas fa-info-circle"></i> {{income.description}}
+                </span>
+              </div>
+            </div>
+            
+            <div class="item-actions">
+              <button (click)="editIncome(income)" class="btn btn-edit">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button (click)="deleteIncome(income.id!)" class="btn btn-delete">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

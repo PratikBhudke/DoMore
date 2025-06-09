@@ -1,0 +1,144 @@
+<div class="todo-container">
+  <!-- Back Navigation -->
+  <div class="back-navigation">
+    <a routerLink="/dashboard" class="back-button">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back</span>
+    </a>
+  </div>
+
+  <!-- Todo Content -->
+  <div class="todo-content">
+    <div class="todo-form">
+      <h2>{{ editingTodo ? 'Edit Todo' : 'Add New Todo' }}</h2>
+
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="todoForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <input 
+            type="text" 
+            formControlName="title" 
+            placeholder="Title" 
+            class="form-control"
+            [class.is-invalid]="todoForm.get('title')?.invalid && todoForm.get('title')?.touched"
+          >
+          <div class="error-message" *ngIf="todoForm.get('title')?.invalid && todoForm.get('title')?.touched">
+            <span *ngIf="todoForm.get('title')?.errors?.['required']">Title is required</span>
+            <span *ngIf="todoForm.get('title')?.errors?.['minlength']">Title must be at least 3 characters</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <textarea 
+            formControlName="description" 
+            placeholder="Description" 
+            class="form-control"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <select 
+            formControlName="priority" 
+            class="form-control"
+            [class.is-invalid]="todoForm.get('priority')?.invalid && todoForm.get('priority')?.touched"
+          >
+            <option *ngFor="let priority of priorities" [value]="priority">
+              {{priority}}
+            </option>
+          </select>
+          <div class="error-message" *ngIf="todoForm.get('priority')?.invalid && todoForm.get('priority')?.touched">
+            Priority is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <input 
+            type="date" 
+            formControlName="dueDate" 
+            class="form-control"
+            [class.is-invalid]="todoForm.get('dueDate')?.invalid && todoForm.get('dueDate')?.touched"
+          >
+          <div class="error-message" *ngIf="todoForm.get('dueDate')?.invalid && todoForm.get('dueDate')?.touched">
+            Due date is required
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="todoForm.invalid || isLoading"
+          >
+            <i class="fas" [class.fa-plus]="!editingTodo" [class.fa-save]="editingTodo"></i>
+            {{ editingTodo ? 'Update' : 'Add' }} Todo
+            <i class="fas fa-spinner fa-spin" *ngIf="isLoading"></i>
+          </button>
+          <button 
+            type="button" 
+            *ngIf="editingTodo" 
+            (click)="resetForm()" 
+            class="btn btn-secondary"
+            [disabled]="isLoading"
+          >
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="todo-list">
+      <h2>Todo List</h2>
+
+      <!-- Loading State -->
+      <div class="loading-state" *ngIf="isLoading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading todos...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!isLoading && todos.length === 0">
+        <i class="fas fa-tasks"></i>
+        <h3>No Todos Yet</h3>
+        <p>Add your first todo to get started!</p>
+      </div>
+
+      <!-- Todo Items -->
+      <div class="todo-items" *ngIf="!isLoading && todos.length > 0">
+        <div *ngFor="let todo of todos" class="todo-item" [class.completed]="todo.completed">
+          <div class="todo-content">
+            <div class="todo-header">
+              <h3>{{todo.title}}</h3>
+              <span class="priority-badge" [class.high]="todo.priority === 'High'"
+                    [class.medium]="todo.priority === 'Medium'"
+                    [class.low]="todo.priority === 'Low'">
+                {{todo.priority}}
+              </span>
+            </div>
+            <p class="description">{{todo.description}}</p>
+            <p class="due-date">
+              <i class="far fa-calendar-alt"></i>
+              Due: {{todo.dueDate | date}}
+            </p>
+          </div>
+          
+          <div class="todo-actions">
+            <button (click)="toggleTodoStatus(todo.id!)" class="btn btn-toggle" [disabled]="isLoading">
+              <i class="fas" [class.fa-check-circle]="!todo.completed" [class.fa-undo]="todo.completed"></i>
+              {{ todo.completed ? 'Mark Incomplete' : 'Mark Complete' }}
+            </button>
+            <button (click)="editTodo(todo)" class="btn btn-edit" [disabled]="isLoading">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button (click)="deleteTodo(todo.id!)" class="btn btn-delete" [disabled]="isLoading">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

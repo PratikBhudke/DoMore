@@ -1,0 +1,37 @@
+<div class="index-container" *ngIf="!isLoggedIn()">
+    <div class="hero-section">
+        <h1>Welcome to DoMore</h1>
+        <p class="subtitle">Your personal task management solution</p>
+        
+        <div class="auth-buttons">
+            <button (click)="navigateToLogin()" class="btn btn-primary">Login</button>
+            <button (click)="navigateToRegister()" class="btn btn-secondary">Register</button>
+        </div>
+    </div>
+
+    <div class="features-section">
+        <h2>Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-tasks"></i>
+                <h3>Task Management</h3>
+                <p>Organize your tasks with priorities and due dates</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-check-circle"></i>
+                <h3>Track Progress</h3>
+                <p>Monitor your task completion and productivity</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-money-bill-wave"></i>
+                <h3>Money Tracker</h3>
+                <p>Keep track of your expenses and income</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-sticky-note"></i>
+                <h3>Notes</h3>
+                <p>Create and organize your personal notes</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <section class="welcome-section">
+        <h1>Welcome, {{ userName }}!</h1>
+        <p>What would you like to do today?</p>
+    </section>
+
+    <!-- Apps Section -->
+    <section class="apps-section">
+        <div class="apps-grid">
+            <div class="app-card" *ngFor="let app of apps">
+                <div class="app-icon" [style.backgroundColor]="app.color + '1A'">
+                    <i [class]="app.icon" [style.color]="app.color"></i>
+                </div>
+                <div class="app-content">
+                    <h2>{{ app.title }}</h2>
+                    <p>{{ app.description }}</p>
+                    <button class="btn-launch" (click)="navigateToApp(app.route)">
+                        Launch <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div> 

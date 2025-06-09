@@ -1,0 +1,75 @@
+<header class="header">
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <a routerLink="/" class="logo">
+                <i class="fas fa-check-circle"></i>
+                DoMore
+            </a>
+        </div>
+
+        <div class="navbar-menu">
+            <ul class="nav-links">
+                <!-- Show these links only when not logged in -->
+                <ng-container *ngIf="!isLoggedIn()">
+                    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
+                    <li><a routerLink="/contact" routerLinkActive="active">Contact Us</a></li>
+                    <li><a routerLink="/about" routerLinkActive="active">About Us</a></li>
+                </ng-container>
+
+                <!-- Show these links only when logged in -->
+                <ng-container *ngIf="isLoggedIn()">
+                    <li><a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a></li>
+                    <li><a routerLink="/contact" routerLinkActive="active">Contact Us</a></li>
+                    <li><a routerLink="/about" routerLinkActive="active">About Us</a></li>
+                </ng-container>
+            </ul>
+        </div>
+
+        <!-- Auth buttons for non-logged in users -->
+        <div class="auth-buttons" *ngIf="!isLoggedIn()">
+            <button (click)="navigateToLogin()" class="btn btn-login">Login</button>
+            <button (click)="navigateToRegister()" class="btn btn-register">Register</button>
+        </div>
+
+        <!-- User menu for logged in users -->
+        <div class="user-menu" *ngIf="isLoggedIn()">
+            <div class="user-info" (click)="toggleUserDropdown()">
+                <i class="fas fa-user-circle"></i>
+                <span>{{ currentUser?.name }}</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="user-dropdown" [class.active]="isUserDropdownOpen">
+                <a routerLink="/profile"><i class="fas fa-user"></i> Profile</a>
+                <a routerLink="/settings"><i class="fas fa-cog"></i> Settings</a>
+                <button (click)="onLogout()" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+
+        <!-- Mobile menu button -->
+        <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu" [class.active]="isMobileMenuOpen">
+        <ul class="mobile-nav-links">
+            <ng-container *ngIf="!isLoggedIn()">
+                <li><a routerLink="/" (click)="toggleMobileMenu()">Home</a></li>
+                <li><a routerLink="/features" (click)="toggleMobileMenu()">Features</a></li>
+                <li><a routerLink="/about" (click)="toggleMobileMenu()">About Us</a></li>
+                <li><a (click)="navigateToLogin()">Login</a></li>
+                <li><a (click)="navigateToRegister()">Register</a></li>
+            </ng-container>
+            
+            <ng-container *ngIf="isLoggedIn()">
+                <li><a routerLink="/home" (click)="toggleMobileMenu()">Dashboard</a></li>
+                <li><a routerLink="/contact" (click)="toggleMobileMenu()">Contact Us</a></li>
+                <li><a routerLink="/about" (click)="toggleMobileMenu()">About Us</a></li>
+                <li><a routerLink="/profile" (click)="toggleMobileMenu()">Profile</a></li>
+                <li><a routerLink="/settings" (click)="toggleMobileMenu()">Settings</a></li>
+                <li><a (click)="onLogout(); toggleMobileMenu()">Logout</a></li>
+            </ng-container>
+        </ul>
+    </div>
+</header>

@@ -1,0 +1,176 @@
+<div class="event-container">
+  <!-- Back Navigation -->
+  <div class="back-navigation">
+    <a routerLink="/dashboard" class="back-button">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back</span>
+    </a>
+  </div>
+
+  <!-- Event Content -->
+  <div class="event-content">
+    <h2>Event Planner</h2>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Event Form -->
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmitEvent()">
+      <div class="form-group">
+        <label for="title">Event Title</label>
+        <input 
+          type="text" 
+          id="title" 
+          formControlName="title" 
+          class="form-control"
+          [class.is-invalid]="title?.invalid && title?.touched"
+          placeholder="Enter event title"
+        >
+        <div class="error-message" *ngIf="title?.invalid && title?.touched">
+          <span *ngIf="title?.errors?.['required']">Title is required</span>
+          <span *ngIf="title?.errors?.['minlength']">Title must be at least 3 characters</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea 
+          id="description" 
+          formControlName="description" 
+          class="form-control"
+          [class.is-invalid]="description?.invalid && description?.touched"
+          placeholder="Enter event description"
+        ></textarea>
+        <div class="error-message" *ngIf="description?.invalid && description?.touched">
+          <span *ngIf="description?.errors?.['required']">Description is required</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input 
+            type="date" 
+            id="date" 
+            formControlName="date" 
+            class="form-control"
+            [class.is-invalid]="date?.invalid && date?.touched"
+          >
+          <div class="error-message" *ngIf="date?.invalid && date?.touched">
+            <span *ngIf="date?.errors?.['required']">Date is required</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="time">Time</label>
+          <input 
+            type="time" 
+            id="time" 
+            formControlName="time" 
+            class="form-control"
+            [class.is-invalid]="time?.invalid && time?.touched"
+          >
+          <div class="error-message" *ngIf="time?.invalid && time?.touched">
+            <span *ngIf="time?.errors?.['required']">Time is required</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input 
+          type="text" 
+          id="location" 
+          formControlName="location" 
+          class="form-control"
+          [class.is-invalid]="location?.invalid && location?.touched"
+          placeholder="Enter event location"
+        >
+        <div class="error-message" *ngIf="location?.invalid && location?.touched">
+          <span *ngIf="location?.errors?.['required']">Location is required</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="priority">Priority</label>
+        <select 
+          id="priority" 
+          formControlName="priority" 
+          class="form-control"
+          [class.is-invalid]="priority?.invalid && priority?.touched"
+        >
+          <option value="">Select Priority</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+        <div class="error-message" *ngIf="priority?.invalid && priority?.touched">
+          <span *ngIf="priority?.errors?.['required']">Priority is required</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="resetForm()">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="eventForm.invalid || isSubmitting">
+          <i class="fas fa-save"></i> {{ editingEvent ? 'Update Event' : 'Add Event' }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Events List -->
+    <div class="events-list" *ngIf="!isLoading && events.length > 0">
+      <h3>
+        <i class="fas fa-calendar-check"></i>
+        Upcoming Events
+      </h3>
+      <div class="event-cards">
+        <div *ngFor="let event of events" class="event-card" [class.priority-high]="event.priority === 'high'"
+             [class.priority-medium]="event.priority === 'medium'" [class.priority-low]="event.priority === 'low'">
+          <div class="event-header">
+            <h4>{{ event.title }}</h4>
+            <div class="event-actions">
+              <button (click)="editEvent(event)" class="btn-icon" title="Edit Event">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button (click)="deleteEvent(event.id!)" class="btn-icon delete" title="Delete Event">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="event-details">
+            <p class="description">{{ event.description }}</p>
+            <div class="event-info">
+              <span class="date">
+                <i class="far fa-calendar"></i>
+                {{ event.date | date:'mediumDate' }}
+              </span>
+              <span class="time">
+                <i class="far fa-clock"></i>
+                {{ event.time }}
+              </span>
+              <span class="location">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ event.location }}
+              </span>
+              <span class="priority-badge" [class]="event.priority">
+                <i class="fas fa-flag"></i>
+                {{ event.priority | titlecase }} Priority
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && events.length === 0">
+      <i class="far fa-calendar-plus"></i>
+      <h3>No Events Planned</h3>
+      <p>Start planning your schedule by adding your first event!</p>
+    </div>
+  </div>
+</div>

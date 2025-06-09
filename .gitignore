@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+DoMore-F/node_modules/
 
 # Environment variables
 .env
@@ -11,6 +12,7 @@ node_modules/
 # Build files
 /build
 /dist
+DoMore-F/dist/
 
 # Debug logs
 npm-debug.log*
